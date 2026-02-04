@@ -41,6 +41,14 @@ type TaskSendWelcomeEmail struct {
 	Email string `json:"emai"`
 }
 
+func NewUserEmail(payload TaskSendWelcomeEmail) (*asynq.Task, error) {
+	data, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+	return asynq.NewTask(TypeNewUserEmail, data), nil
+}
+
 // NewOrderCreatedTask creates a task for order creation event
 func NewOrderCreatedTask(payload OrderCreatedPayload) (*asynq.Task, error) {
 	data, err := json.Marshal(payload)

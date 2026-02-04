@@ -17,13 +17,16 @@ func main() {
 	server := redis.NewServer()
 
 	mux := asynq.NewServeMux()
-	mux.HandleFunc(tasks.TypeSendEmail, workers.HandleNewWelcomeEmail)
-	// Pub: Event router
+	log.Println("📋 Registering task handlers...")
+	mux.HandleFunc(tasks.TypeNewUserEmail, workers.HandleNewWelcomeEmail)
 	mux.HandleFunc(tasks.TypeOrderCreated, workers.HandleOrderCreated)
+	log.Printf("   ✅ Registered: %s -> HandleOrderCreated", tasks.TypeOrderCreated)
 
-	// Sub: Independent handlers
 	mux.HandleFunc(tasks.TypeSendEmail, workers.HandleSendEmail)
+	log.Printf("   ✅ Registered: %s -> HandleSendEmail", tasks.TypeSendEmail)
+
 	mux.HandleFunc(tasks.TypeUpdateInventory, workers.HandleUpdateInventory)
+	log.Printf("   ✅ Registered: %s -> HandleUpdateInventory", tasks.TypeUpdateInventory)
 
 	log.Println("Worker started")
 	if err := server.Run(mux); err != nil {

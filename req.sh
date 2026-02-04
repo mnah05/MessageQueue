@@ -1,16 +1,24 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-URL="http://localhost:8080/new-user"
-CONTENT_TYPE="Content-Type: application/json"
+API_URL="http://localhost:8080"
 
-for i in $(seq 1 100); do
-  (
-    curl -s -X POST "$URL" \
-      -H "$CONTENT_TYPE" \
-      -d "{\"email\":\"user$i@example.com\"}" \
-      -w "request $i → status %{http_code}\n"
-  ) &
-done
+ORDER_ID="ORD-$(date +%s)"
+CUSTOMER_ID="CUST-001"
+EMAIL="customer@example.com"
+AMOUNT=199.99
 
-wait
-echo "All requests sent"
+echo "Creating order..."
+echo "Order ID: $ORDER_ID"
+
+curl -X POST "$API_URL/orders" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"order_id\": \"$ORDER_ID\",
+    \"customer_id\": \"$CUSTOMER_ID\",
+    \"email\": \"$EMAIL\",
+    \"amount\": $AMOUNT,
+    \"items\": [\"item1\", \"item2\", \"item3\"]
+  }"
+
+echo
+echo "Done."
