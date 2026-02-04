@@ -8,6 +8,7 @@ import (
 
 func main() {
 	http.HandleFunc("/new-user", handlers.NewUserHandler)
+	http.HandleFunc("/orders", handlers.CreateOrder)
 
 	log.Println("server running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

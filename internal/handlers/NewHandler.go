@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"jobqueue/internal/redis"
-	"jobqueue/internal/tasks"
 	"log"
 	"net/http"
 	"strings"
@@ -56,16 +55,16 @@ func NewUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("new user email:", req.Email)
 
-	task, err := tasks.NewWelcomeEmailTask(req.Email)
-	if err != nil {
-		http.Error(w, "could not create task", http.StatusInternalServerError)
-		return
-	}
-
-	if _, err := client.Enqueue(task); err != nil {
-		http.Error(w, "could not create task", http.StatusInternalServerError)
-		return
-	}
+	// task, err := tasks.NewWelcomeEmailTask(req.Email)
+	// if err != nil {
+	// 	http.Error(w, "could not create task", http.StatusInternalServerError)
+	// 	return
+	// }
+	// //now this task is retried for a max of 5 times and is in the critical queue
+	// if _, err := client.Enqueue(task, asynq.Queue("critical"), asynq.MaxRetry(5)); err != nil {
+	// 	http.Error(w, "could not create task", http.StatusInternalServerError)
+	// 	return
+	// }
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

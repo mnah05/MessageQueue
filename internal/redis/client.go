@@ -1,6 +1,8 @@
 package redis
 
 import (
+	"context"
+	"fmt"
 	"runtime"
 
 	"github.com/hibiken/asynq"
@@ -14,6 +16,7 @@ func NewClient() *asynq.Client {
 
 func NewServer() *asynq.Server {
 	numOfWorkers := 2*(runtime.NumCPU()) + 1
+
 	return asynq.NewServer(
 		asynq.RedisClientOpt{
 			Addr: "localhost:6379",
@@ -25,6 +28,14 @@ func NewServer() *asynq.Server {
 				"default":  3,
 				"low":      1,
 			},
+			ErrorHandler: asynq.ErrorHandlerFunc(
+				func(ctx context.Context, t *asynq.Task, err error) {
+					fmt.Println("TASK FAILED AFTER MAX RETRIES")
+					fmt.Println("Type:", t.Type())
+					fmt.Println("Payload:", string(t.Payload()))
+					fmt.Println("Error:", err)
+				},
+			),
 		},
 	)
 }
